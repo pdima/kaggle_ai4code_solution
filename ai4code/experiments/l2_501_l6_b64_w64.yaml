@@ -1,0 +1,58 @@
+###################
+## Model options
+model_params:
+  model_type: "models_l2"
+  model_cls: "L2Transformer"
+  nb_combine_cells_around: 1
+  nhead_code: 16
+  nhead_md: 16
+  num_decoder_layers: 6
+  dec_dim: 1024
+  dim_feedforward: 2048
+  encoder_code_dim: 768
+  encoder_md_dim: 768
+  combined_pos_enc: true
+
+dataset_params:
+  data_dir: "/opt/data2/ai4code/decoder/342_single_bert_l2_scaled_att_770_f1"
+  extra_data_dir: "/opt/data3/ai4code/extra_data/342_single_bert_l2_scaled_att_770_f1"
+  add_empty_cells_p: 0.1
+  add_empty_cells_norm: 0.4
+
+###################
+## Data loader options
+train_data_loader:
+  batch_size: 1
+  num_workers: 4
+  use_weighted_sampler: true
+  weighed_sampler_min_size: 64.0
+
+val_data_loader:
+  batch_size: 1
+  num_workers: 4
+
+test_data_loader:
+  batch_size: 1
+  num_workers: 2
+
+###################
+## Train params
+train_params:
+  nb_epochs: 800
+  epoch_size: 4096
+  optimizer: adamW
+  scheduler: CosineAnnealingWarmRestarts
+  scheduler_period: 16
+  scheduler_t_mult: 1.41421
+  initial_lr: 5.0e-5
+  save_period: 10
+  grad_clip: 8
+  labels_smooth: 0.0001
+  mask_loss: bce
+  grad_accumulation_steps: 1
+  freeze_backbone_steps: 0
+  batch_md_after_code_size: 4096  # 64 * 64
+  loss_scale:
+    md_after_code: 1.0
+    md_after_md: 0.5
+    mp_pos_ce: 2.0

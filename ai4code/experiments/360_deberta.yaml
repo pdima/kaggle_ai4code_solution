@@ -1,0 +1,78 @@
+###################
+## Model options
+model_params:
+  model_type: "models_bert2"
+  model_cls: "SingleBertWithL2"
+  code_model_name: 'microsoft/deberta-v3-large'
+  enable_gradient_checkpointing: true
+  pool_mode: 'avg'
+  l2_name: 'L2Transformer'
+  l2_params:
+    nb_combine_cells_around: 1
+    nhead_code: 16
+    nhead_md: 16
+    num_decoder_layers: 2
+    dec_dim: 1024
+    dim_feedforward: 2048
+    encoder_code_dim: 1024
+    encoder_md_dim: 1024
+    combined_pos_enc: true
+    add_extra_outputs: false
+    rescale_att: true
+
+
+dataset_params:
+  code_tokenizer_name: 'microsoft/deberta-v3-large'
+  md_tokenizer_name: 'microsoft/deberta-v3-large'
+  max_code_tokens_number: 256
+  max_md_tokens_number: 256
+  nb_code_cells: 1024
+  nb_md_cells: 1024
+  batch_cost: 32768
+  max_size2: 524288
+  cell_prefix: ''
+  preprocess_md: ''
+  use_pos_between_code: True
+  low_case_md: False
+  low_case_code: False
+
+###################
+## Data loader options
+train_data_loader:
+  batch_size: 1
+  num_workers: 4
+  use_weighted_sampler: true
+  weighted_sampler_epoch: 102
+  weighed_sampler_min_size: 16.0
+
+val_data_loader:
+  batch_size: 1
+  num_workers: 4
+
+test_data_loader:
+  batch_size: 1
+  num_workers: 2
+
+###################
+## Train params
+train_params:
+  nb_epochs: 800
+  epoch_size: 4096
+  optimizer: adamW
+  scheduler: CosineAnnealingWarmRestarts
+  scheduler_period: 16
+  scheduler_t_mult: 1.41421
+  initial_lr: 1.0e-5
+  save_period: 2
+  grad_clip: 4
+  labels_smooth: 0.001
+  mask_loss: bce
+  grad_accumulation_steps: 1
+  freeze_backbone_steps: -3
+  total_inputs_size_threshold: 32
+  loss_scale:
+    md_after_code: 2.0
+    md_after_md: 1.0
+    mp_pos_ce: 1.0
+    md_after_code_sum: 0.000001
+    md_after_code_max: 0.02
